@@ -7,6 +7,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,16 +21,31 @@ public class LabyrinthBot extends TelegramLongPollingBot {
     private String red = "🟥";
     private String gold = "🟨";
 
+    private String botUsername;
+    private String botToken;
+
+    public LabyrinthBot() {
+        loadBotCredentials("token.txt");
+    }
+
+    private void loadBotCredentials(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            this.botUsername = reader.readLine();
+            this.botToken = reader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private Labyrinth labyrinth = new Labyrinth(10, 10);
 
     @Override
     public String getBotUsername() {
-        return "myjavasnakebot";
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return "7211941823:AAEEAx28mUEj5geHEzSzyMUeQgYVcvP0k6s";
+        return botToken;
     }
 
     @Override
@@ -162,9 +181,9 @@ public class LabyrinthBot extends TelegramLongPollingBot {
                 for (int j = 0; j < width; j++)
                     if (i == playerY && j == playerX)
                         newGrid[i][j] = black;
-                        else if (i == goalY && j == goalX)
+                    else if (i == goalY && j == goalX)
                         newGrid[i][j] = gold;
-                        else
+                    else
                         newGrid[i][j] = random.nextBoolean() ? green : red;
             grid = newGrid;
             ensureFreeCellNextToPlayer();
